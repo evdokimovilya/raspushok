@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="ru">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Ассоциации — простая версия</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #e6eef8;
+            margin: 0;
+            padding: 20px
+        }
+
+        form {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px
+        }
+
+        input,
+        select {
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white
+        }
+
+        button {
+            padding: 8px 12px;
+            border: 0;
+            border-radius: 6px;
+            background: #7c3aed;
+            color: white;
+            cursor: pointer
+        }
+
+        .node {
+            padding: 10px;
+            margin: 6px 0;
+            background: #1e293b;
+            border-left: 4px solid #7c3aed;
+            border-radius: 6px
+        }
+
+        .child {
+            margin-left: 20px
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Генератор ассоциаций (минимум JS)</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="word" placeholder="Новое слово" required>
+
+        <select name="parent">
+            <option value="">Корневой узел</option>
+            {% for n in nodes %}
+            <option value="{{ n.id }}">#{{ n.id }} — {{ n.word }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Добавить</button>
+    </form>
+
+    <h2>Структура</h2>
+
+    <div class="node">#1 — Начало</div>
+    <div class="node child">↳ #2 — Идея</div>
+    <div class="node child">↳ #3 — Ассоциация</div>
+
+    <div class="node">#4 — Животное</div>
+    <div class="node child">↳ #5 — Собака</div>
+    <div class="node child">↳ #6 — Хвост</div>
+
+</body>
+
+</html>
