@@ -34,7 +34,7 @@ class YandexGpt():
 
     def get_association(self, word: str, exclude: str = ""):
         
-        prompt = f"Придумай необычную ассоциацию к слову. Ответь одним словом. Не повторяйся. Вот что уже было: {exclude}"
+        prompt = f"Отвечай только одним или двумя словами. Придумай необычную ассоциацию к слову. Не повторяйся. Вот что уже было: {exclude}"
         word = self.get_reponse(input=word, instructions=prompt)
         
         if not word:
