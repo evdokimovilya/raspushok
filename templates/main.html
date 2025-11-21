@@ -1,47 +1,115 @@
 <!doctype html>
 <html lang="ru">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Ассоциации — простая версия</title>
   <style>
-    body{font-family:Arial, sans-serif;background:#0f172a;color:#e6eef8;margin:0;padding:20px}
-    form{margin-bottom:20px;display:flex;gap:10px}
-    input,select{padding:8px;border-radius:6px;border:1px solid #334155;background:#1e293b;color:white}
-    button{padding:8px 12px;border:0;border-radius:6px;background:#7c3aed;color:white;cursor:pointer}
-    .node{padding:10px;margin:12px 0 6px 0;background:#1e293b;border-left:4px solid #7c3aed;border-radius:6px}
-    .child{margin-left:0} /* дети на одном уровне с родителем */
-    .root{margin-top:12px} /* отступы между главными узлами */
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #e6eef8;
+      margin: 0;
+      padding: 20px
+    }
+
+    form {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px
+    }
+
+    input,
+    select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: white
+    }
+
+    button {
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 6px;
+      background: #7c3aed;
+      color: white;
+      cursor: pointer
+    }
+
+    .node {
+      padding: 10px;
+      margin: 12px 0 6px 0;
+      background: #1e293b;
+      border-left: 4px solid #7c3aed;
+      border-radius: 6px
+    }
+
+    .child {
+      margin-left: 0
+    }
+
+    /* дети на одном уровне с родителем */
+    .root {
+      margin-top: 40px;
+    }
+
+    .children {
+      display:flex; 
+      gap:12px; 
+      align-items:flex-start;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 600px) {
+
+      .children {
+        flex-direction: row-reverse;
+        flex-wrap: wrap-reverse;
+      }
+
+      .child {
+        width: 100%;
+      }
+    }
   </style>
 </head>
+
 <body>
   <h1>Распушок 1.0 </h1>
 
   <form method="post">
     {% csrf_token %}
-    <input type="text" name="word" placeholder="Новое слово" required>
-
-    <select name="parent">
-      <option value="">Корневой узел</option>
-      {% for n in nodes %}
-        <option value="{{ n.id }}">#{{ n.id }} — {{ n.word }}</option>
-      {% endfor %}
-    </select>
-
+    {{ form }}
     <button type="submit">Добавить</button>
   </form>
-
-  <h2>Структура</h2>
+    <div class="errors" style="color: yellow;">{{ errors }}</div>
 
   {% load mptt_tags %}
-  {% recursetree nodes %}
-    <div class="node {% if node.level == 0 %}root{% endif %}" style="margin-left: 0px;">
-      {{ node.name }}
-    </div>
-    {% if not node.is_leaf_node %}
-      {{ children }}
-    {% endif %}
-  {% endrecursetree %}
+  <div class="tree">
+    {% for node in nodes %}
+      {% if node.level == 0 %}
+        <div class="root">
+          <div class="parent">
+            {{ node.name }}
+            <form method="post" style="display:inline; margin-left:10px;" action="{% url 'add_node' node.id %}">
+              {% csrf_token %}
+              <button type="submit">+</button>
+            </form>
+          </div>
+
+          <div class="children">
+            {% for child in node.get_descendants %}
+              <div class="node child">
+                {{ child.name }}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 
 </body>
 </html>
