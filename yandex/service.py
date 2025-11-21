@@ -37,7 +37,7 @@ class YandexGpt():
         
         env = Environment(loader=FileSystemLoader('yandex/prompts/')) 
         input = env.get_template('assoc.txt')
-        input = input.render({'word': word})
+        input = input.render({'word': word, 'exclude': exclude})
 
         word = self.get_reponse(input=input)
         
