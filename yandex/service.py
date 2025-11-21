@@ -1,4 +1,5 @@
 import openai
+from jinja2 import Environment, FileSystemLoader
 
 from django.conf import settings
 
@@ -21,7 +22,7 @@ class YandexGpt():
             project=self.CATALOG_KEY
         )
 
-    def get_reponse(self, input: str, instructions: str, temerature=1.0):
+    def get_reponse(self, input: str, instructions: str = None, temerature=1.0):
 
         response = self.client.responses.create(
             model=f"gpt://{self.CATALOG_KEY}/yandexgpt",
@@ -34,8 +35,11 @@ class YandexGpt():
 
     def get_association(self, word: str, exclude: str = ""):
         
-        prompt = f"Придумай необычную ассоциацию к слову пользователя. Верни свой ответ одним словом. Не повторяйся. Вот что уже было: {exclude}"
-        word = self.get_reponse(input=word, instructions=prompt)
+        env = Environment(loader=FileSystemLoader('yandex/prompts/')) 
+        input = env.get_template('assoc.txt')
+        input = input.render({'word': word})
+
+        word = self.get_reponse(input=input)
         
         if not word:
             raise GPTError('Пустой ответ от нейросети')
@@ -52,7 +56,7 @@ if __name__ == "__main__":
     load_dotenv()
 
     yandex = YandexGpt(os.getenv('YANDEX_API_KEY'), os.getenv('YANDEX_CATALOG'))
-    word = yandex.get_association('подорожник')
+    word = yandex.get_association('снег')
     print(word)
 
 
